@@ -44,7 +44,7 @@ void OptimalAgent::interact(Agent* that) {
 }
 
 float OptimalAgent::estimate() {
-    if(_y != NaN) return _y;
+    if(!isnanf(_y)) return _y;
     float max = _x;
     for(auto [agent, valueAndTime] : _w){
         if(agent == this) continue;

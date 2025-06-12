@@ -6,6 +6,7 @@
 ThresholdAgent::ThresholdAgent(int x, int threshold) {
     _x = x;
     _y = x;
+    _t = 0;
     _threshold = threshold;
 }
 

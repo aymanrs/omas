@@ -86,14 +86,20 @@ Curve generateCurve(AgentType type, int n, int threshold, int simTime, const std
 }
 
 Curve run(AgentType type, int n, int threshold, int simTime, float rho){
+    OptimalAgent::n = n;
+    OptimalAgent:rho = rho;
+    OptimalAgent::time = 0;
     Curve curve;
     Agent* agents[n];
-    for(int i = 0;i < n;i++) agents[i] = Agent::makeAgent(type, rng()%1000);
+    for(int i = 0;i < n;i++) agents[i] = Agent::makeAgent(type, rng()%1000, threshold);
     for(int t = 0;t < simTime;t++){
+        OptimalAgent::time = t;
         for(int i = 0;i < n;i++) if(urd(rng) < rho) {
             agents[i]->leave(agents[randomDifferentIndex(n, i)]);
-            delete agents[i];
-            agents[i] = Agent::makeAgent(type, rng()%1000);
+            if(type != AgentType::Optimal){
+                delete agents[i];
+                agents[i] = Agent::makeAgent(type, rng()%1000, threshold);
+            }
         }
         auto [i,j] = randomPair(n);
         agents[i]->interact(agents[j]);
@@ -110,11 +116,11 @@ Curve run(AgentType type, int n, int threshold, int simTime, float rho){
 }
 
 int main() {
-    const int n = 25, T_star = 11, simTime = 2000, nRuns = 50;
+    const int n = 25, T_star = 11, simTime = 2000, nRuns = 250;
     std::vector<float> rhos;
     const float a = 0, b = 0.001, nRhos = 40;
     for(float rhoIdx = 0; rhoIdx < nRhos;rhoIdx++) rhos.push_back(a+(b-a)*rhoIdx/nRhos);
-    Curve optimal = generateCurve(AgentType::Optimal, n, T_star, simTime, rhos, nRuns, "optimal");\
+    Curve optimal = generateCurve(AgentType::Optimal, n, T_star, simTime, rhos, nRuns, "optimal");
     Curve threshold = generateCurve(AgentType::Threshold, n, T_star, simTime, rhos, nRuns, "threshold");
     Curve twoMax = generateCurve(AgentType::TwoMax, n, T_star, simTime, rhos, nRuns, "2max");
     for(float& y_i : optimal.y) y_i /= M_SQRT2f;

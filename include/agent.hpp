@@ -21,6 +21,7 @@ public:
     int value() const {
         return _x;
     }
+    virtual ~Agent(){};
 };
 
 #endif

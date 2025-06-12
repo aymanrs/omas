@@ -7,6 +7,7 @@
 TwoMaxAgent::TwoMaxAgent(int x, int threshold) {
     _x = x;
     _y = x;
+    _t = 0;
     _y2 = std::numeric_limits<float>::min();
     _t2 = 0;
     _threshold = threshold;
@@ -20,7 +21,7 @@ void TwoMaxAgent::update() {
     _t++;
     _t2++;
     if(_t >= _threshold) {
-        _t = 0;
+        _t = _t2/2;
         _y = _y2;
         _y2 = std::numeric_limits<float>::min();
         _t2 = 0;
@@ -29,7 +30,7 @@ void TwoMaxAgent::update() {
         _y = _x;
         _t = 0;
     }
-    if(_t2 >= _threshold) {
+    if(_t2 >= _threshold*2) {
         _y2 = std::numeric_limits<float>::min();
         _t2 = 0;
     }
@@ -46,7 +47,7 @@ void TwoMaxAgent::interact(Agent* that) {
     other->update();
     if(_y > other->_y) {
         other->_y2 = other->_y;
-        other->_t2 = other->_t2;
+        other->_t2 = other->_t;
         other->_y = _y;
         other->_t = _t;
     } else if (_y < other->_y) {

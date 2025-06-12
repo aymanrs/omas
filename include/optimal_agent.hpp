@@ -1,10 +1,11 @@
 #ifndef __OPTIMAL_AGENT_HPP__
 #define __OPTIMAL_AGENT_HPP__
 
-#include "agent.hpp"
 #include <unordered_map>
+#include <cmath>
+#include "agent.hpp"
 
-static float NaN = -56723.2134;
+static float NaN = nanf("");
 
 class OptimalAgent : public Agent {
 private:
