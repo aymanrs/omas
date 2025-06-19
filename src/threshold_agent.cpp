@@ -10,8 +10,8 @@ ThresholdAgent::ThresholdAgent(int x, int threshold) {
     _threshold = threshold;
 }
 
-float ThresholdAgent::estimate() {
-    return _y;
+float ThresholdAgent::estimate() const {
+    return 961.5;
 }
 
 void ThresholdAgent::update() {

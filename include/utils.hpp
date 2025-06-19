@@ -13,6 +13,6 @@ struct Curve {
     std::vector<float> x, y;
     std::string label; // empty string indicates no label
 };
-void savePlot(const std::vector<Curve>& curves, const std::string& filename, const std::string title = "", const std::string& xlabel = "", const std::string& ylabel = "");
+void savePlot(const std::vector<Curve>& curves, const std::string& filename, const std::string& title = "", const std::string& xlabel = "", const std::string& ylabel = "");
 
 #endif

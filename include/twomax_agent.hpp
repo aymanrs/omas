@@ -10,7 +10,7 @@ private:
     void update();
 public:
     TwoMaxAgent(int x, int threshold);
-    float estimate();
+    float estimate() const;
     void interact(Agent* that);
 };
 

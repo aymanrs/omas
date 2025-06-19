@@ -10,7 +10,7 @@ private:
 public:
     AnnounceAgent(int x);
     void interact(Agent* that);
-    float estimate();
+    float estimate() const;
     void leave(Agent* agentToInform = nullptr);
 };
 

@@ -40,7 +40,7 @@ int randomDifferentIndex(int n, int i) {
 }
 
 
-void savePlot(const std::vector<Curve>& curves, const std::string& filename, const std::string title, const std::string& xlabel, const std::string& ylabel) {
+void savePlot(const std::vector<Curve>& curves, const std::string& filename, const std::string& title, const std::string& xlabel, const std::string& ylabel) {
     std::ofstream outputFile(filename);
     outputFile << title << '\n';
     outputFile << xlabel << '\n';

@@ -9,7 +9,7 @@ AnnounceAgent::AnnounceAgent(int x) {
     _k = 0;
 }
 
-float AnnounceAgent::estimate() {
+float AnnounceAgent::estimate() const {
     return _y;
 }
 
