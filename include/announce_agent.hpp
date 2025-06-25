@@ -9,8 +9,8 @@ private:
     int _k;
 public:
     AnnounceAgent(int x);
-    void interact(Agent* that);
-    float estimate() const;
+    void interact(Agent* that) noexcept;
+    float estimate() const noexcept;
     void leave(Agent* agentToInform = nullptr);
 };
 

@@ -6,12 +6,12 @@
 class TwoMaxAgent : public Agent {
 private:
     float _y, _y2;
-    int _t, _t2, _threshold;
+    int _t, _t2, _threshold, _interactions;
     void update();
 public:
     TwoMaxAgent(int x, int threshold);
-    float estimate() const;
-    void interact(Agent* that);
+    float estimate() const noexcept;
+    void interact(Agent* that) noexcept;
 };
 
 #endif

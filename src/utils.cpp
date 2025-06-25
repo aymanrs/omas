@@ -59,3 +59,7 @@ void savePlot(const std::vector<Curve>& curves, const std::string& filename, con
         outputFile << '\n';
     }
 }
+
+float sampleExpDist(float tau){
+    return -log(1-urd(rng))*tau;
+}

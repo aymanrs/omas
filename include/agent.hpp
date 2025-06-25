@@ -20,9 +20,9 @@ public:
     int _id;
     static int idCounter;
     static Agent* makeAgent(AgentType type, int x, int threshold = 0);
-    virtual void interact(Agent* that) = 0;
+    virtual void interact(Agent* that) noexcept = 0;
     virtual void leave(Agent* agentToInform = nullptr) {};
-    virtual float estimate() const = 0;
+    virtual float estimate() const noexcept = 0;
     int value() const {
         return _x;
     }

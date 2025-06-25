@@ -10,18 +10,21 @@ TwoMaxAgent::TwoMaxAgent(int x, int threshold) {
     _t = 0;
     _y2 = std::numeric_limits<float>::min();
     _t2 = 0;
+    _interactions = 0;
     _threshold = threshold;
 }
 
-float TwoMaxAgent::estimate() const {
-    return _y;
+float TwoMaxAgent::estimate() const noexcept {
+    float lerpParam = float(_interactions)/(_interactions+6);
+    return _y*lerpParam + 961.5*(1-lerpParam);
 }
 
 void TwoMaxAgent::update() {
+    _interactions++;
     _t++;
     _t2++;
     if(_t >= _threshold) {
-        _t = _t2;
+        _t = _t2/2;
         _y = _y2;
         _y2 = std::numeric_limits<float>::min();
         _t2 = 0;
@@ -30,13 +33,13 @@ void TwoMaxAgent::update() {
         _y = _x;
         _t = 0;
     }
-    if(_t2 >= _threshold) {
+    if(_t2 >= 2*_threshold) {
         _y2 = std::numeric_limits<float>::min();
         _t2 = 0;
     }
 }
 
-void TwoMaxAgent::interact(Agent* that) {
+void TwoMaxAgent::interact(Agent* that) noexcept {
     TwoMaxAgent* other = reinterpret_cast<TwoMaxAgent*>(that);
 #ifdef DEBUG
     if(other == nullptr) {
@@ -47,12 +50,12 @@ void TwoMaxAgent::interact(Agent* that) {
     other->update();
     if(_y > other->_y) {
         other->_y2 = other->_y;
-        other->_t2 = other->_t;
+        other->_t2 = other->_t*2;
         other->_y = _y;
         other->_t = _t;
     } else if (_y < other->_y) {
         _y2 = _y;
-        _t2 = _t;
+        _t2 = _t*2;
         _y = other->_y;
         _t = other->_t;
     } else {

@@ -10,7 +10,7 @@ ThresholdAgent::ThresholdAgent(int x, int threshold) {
     _threshold = threshold;
 }
 
-float ThresholdAgent::estimate() const {
+float ThresholdAgent::estimate() const noexcept {
     return 961.5;
 }
 
@@ -26,7 +26,7 @@ void ThresholdAgent::update() {
     }
 }
 
-void ThresholdAgent::interact(Agent* that) {
+void ThresholdAgent::interact(Agent* that) noexcept {
     ThresholdAgent* other = reinterpret_cast<ThresholdAgent*>(that);
 #ifdef DEBUG
     if(other == nullptr) {

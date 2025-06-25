@@ -9,7 +9,7 @@ AnnounceAgent::AnnounceAgent(int x) {
     _k = 0;
 }
 
-float AnnounceAgent::estimate() const {
+float AnnounceAgent::estimate() const noexcept {
     return _y;
 }
 
@@ -26,7 +26,7 @@ void AnnounceAgent::leave(Agent* agentToInform) {
     }
 }
 
-void AnnounceAgent::interact(Agent* that) {
+void AnnounceAgent::interact(Agent* that) noexcept {
     AnnounceAgent* other = reinterpret_cast<AnnounceAgent*>(that);
 #ifdef DEBUG
     if(other == nullptr) {
