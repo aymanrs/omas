@@ -9,7 +9,7 @@ private:
     int _t, _t2, _threshold, _interactions;
     void update();
 public:
-    TwoMaxAgent(int x, int threshold);
+    TwoMaxAgent(int x, int id, int threshold);
     float estimate() const noexcept;
     void interact(Agent* that) noexcept;
 };

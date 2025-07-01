@@ -1,11 +1,11 @@
 #include "twomax_agent.hpp"
 #include <limits>
+#include <cmath>
 #ifdef DEBUG
 #include <stdexcept>
 #endif
 
-TwoMaxAgent::TwoMaxAgent(int x, int threshold) {
-    _x = x;
+TwoMaxAgent::TwoMaxAgent(int x, int id, int threshold) : Agent(x, id) {
     _y = x;
     _t = 0;
     _y2 = std::numeric_limits<float>::min();

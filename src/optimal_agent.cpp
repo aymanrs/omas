@@ -17,21 +17,21 @@ float fastPow(float x, int n){
     return r;
 }
 
-float OptimalAgent::time = 0;
-float OptimalAgent::rho = 0;
 float OptimalAgent::gamma = 0.003;
-float OptimalAgent::lambdaDelta = 0;
-std::unordered_map<int, float> OptimalAgent::arrivals;
-OptimalAgent::OptimalAgent(int x) {
-    _x = x;
-    _w[_id] = {x, time};
-    arrivals[_id] = time;
-    _freeTimeZeroSlots = 25-(time == 0);
+OptimalAgent::OptimalAgent(int x, int id, const float* time, float rho, float lambdaDelta, std::unordered_map<int, float>* const arrivals)
+: Agent(x, id) {
+    _time = time;
+    _rho = rho;
+    _lambdaDelta = lambdaDelta;
+    _arrivals = arrivals;
+    _w[_id] = {x, *_time};
+    _arrivals->insert({_id, *_time});
+    _freeTimeZeroSlots = 25-(*_time == 0);
 }
 
 // Since we loop through the whole _reach map during each estimation,
 // it makes sense to remove the zeroes which are useless
-void OptimalAgent::modifyReach(float t, int change) {
+void OptimalAgent::modifyReach(float t, int change) noexcept {
     if(!(_reach[t] += change)) _reach.erase(t);
 }
 
@@ -40,15 +40,15 @@ void OptimalAgent::interact(Agent* that) noexcept {
     _y = NaN;
     other->_y = NaN;
     modifyReach(_w[_id].second, -1);
-    modifyReach(time, +1);
-    _w[_id].second = time;
+    modifyReach(*_time, +1);
+    _w[_id].second = *_time;
     other->modifyReach(other->_w[other->_id].second, -1);
-    other->modifyReach(time, +1);
-    other->_w[other->_id].second = time;
+    other->modifyReach(*_time, +1);
+    other->_w[other->_id].second = *_time;
     for(auto [id, valueAndTime] : _w){
         auto it = other->_w.find(id);
         if(it == other->_w.end()) {
-            auto arit = arrivals.find(id);
+            auto arit = _arrivals->find(id);
             other->modifyReach(valueAndTime.second, +1);
             other->modifyReach(arit->second, -1);
             other->_w[id] = valueAndTime;
@@ -62,7 +62,7 @@ void OptimalAgent::interact(Agent* that) noexcept {
     for(auto [id, valueAndTime] : other->_w){
         auto it = _w.find(id);
         if(it == _w.end()) {
-            auto arit = arrivals.find(id);
+            auto arit = _arrivals->find(id);
             modifyReach(valueAndTime.second, +1);
             modifyReach(arit->second, -1);
             _w[id] = valueAndTime;
@@ -77,7 +77,7 @@ void OptimalAgent::interact(Agent* that) noexcept {
 float OptimalAgent::estimate() const noexcept {
     if(!isnanf(_y)) return _y;
     float localTime = _w.at(_id).second;
-    float lnRhoBar = log(1-rho);
+    float lnRhoBar = log(1-_rho);
     float lnGammaBar = log(1-gamma);
     float pStayedGivenUnreached = 1, pUnreachedAndStayed = 1, pUnreachedAndLeft = 0;
     int nReached = 0;
@@ -92,8 +92,8 @@ float OptimalAgent::estimate() const noexcept {
         if(valueAndTime.first > _x)
             events.emplace_back(valueAndTime.second, valueAndTime.first);
     }
-    int availableTimeZeroSlots = _freeTimeZeroSlots;
     std::sort(events.begin(), events.end(), std::greater<std::pair<float, int>>());
+    int availableTimeZeroSlots = _freeTimeZeroSlots;
     while(availableTimeZeroSlots--) {
         int x = rng()%1000;
         if(x > _x) events.emplace_back(0, x);
@@ -108,11 +108,11 @@ float OptimalAgent::estimate() const noexcept {
         if(t < prevT) {
             float deltaT = prevT-t;
             totalTime += deltaT;
-            float pStayedTillNextTimeStep = pow(1-rho, deltaT);
+            float pStayedTillNextTimeStep = pow(1-_rho, deltaT);
             float pUGSTillNextTimeStep = pow(fastPow(1-gamma, nReached), deltaT);
             float c = lnRhoBar/(lnRhoBar+nReached*lnGammaBar);
             // lambdaUnreached += (pUnreachedAndStayed + pUnreachedAndLeft - c) * (
-            //                    (rho ? (pStayedTillNextTimeStep-1)/lnRhoBar : deltaT) +
+            //                    (_rho ? (pStayedTillNextTimeStep-1)/lnRhoBar : deltaT) +
             //                    (pUGSTillNextTimeStep-1)/lnGammaBar -
             //                    (pStayedTillNextTimeStep * pUGSTillNextTimeStep - 1) / (lnRhoBar+lnGammaBar)
             //                 );
@@ -136,13 +136,15 @@ float OptimalAgent::estimate() const noexcept {
     int eventPtr = t_pUAS_pUAL.size()-1;
     float t = 0;
     while(true){
-        t += sampleExpDist(1/lambdaDelta);
+        t += sampleExpDist(1/_lambdaDelta);
         if(t > localTime) break;
+        int x = rng()%1000;
+        if(x <= _x) continue;
         while(std::get<0>(t_pUAS_pUAL[eventPtr]) < t) eventPtr--;
         std::tie(prevT, pUnreachedAndStayed, pUnreachedAndLeft, nReached) = t_pUAS_pUAL[eventPtr];
         float c = lnRhoBar/(lnRhoBar+nReached*lnGammaBar);
         float deltaT = prevT-t;
-        float pStayedTillNextTimeStep = pow(1-rho, deltaT);
+        float pStayedTillNextTimeStep = pow(1-_rho, deltaT);
         float pUGSTillNextTimeStep = pow(fastPow(1-gamma, nReached), deltaT);
         float pUAndSTillNextTimeStep = pStayedTillNextTimeStep*pUGSTillNextTimeStep;
         float pUAndLBeforeNextTimeStep = c * (1-pUAndSTillNextTimeStep);
@@ -150,21 +152,9 @@ float OptimalAgent::estimate() const noexcept {
         pUnreachedAndLeft = pUAndSTillNextTimeStep*pUnreachedAndLeft + pUAndLBeforeNextTimeStep;
         float pUnreached = pUnreachedAndLeft+pUnreachedAndStayed;
         if(urd(rng) > pUnreached) continue;
-        int x = rng()%1000;
-        if(x <= _x) continue;
         pStayedGivenUnreached = pUnreached ? pUnreachedAndStayed/pUnreached : 1;
         if(urd(rng) < pStayedGivenUnreached)
             max = std::max(max, x);
     }
     return _y = max;
 }
-
-void OptimalAgent::leave(Agent* agentToInform) {
-    _w.clear();
-    _x = rng() % 1000;
-    _w[_id] = {_x, time};
-    _reach.clear();
-}
-
-// P[m | n] = 0 if n < m, pReached^m*(1-pReached)^(n-m)*(n choose m)
-// P[m] = 

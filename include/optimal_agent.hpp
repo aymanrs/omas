@@ -10,23 +10,25 @@
 static const float NaN = nanf("");
 static const int NaNi = -1;
 
+
+// IMPORTANT: Maintaining time and arrivals is the responsibility of the client
+// This is designed like this to allow parallelism
 class OptimalAgent : public Agent {
 private:
     std::unordered_map<int, std::pair<int, float>> _w;
     std::unordered_map<float, int> _reach;
     mutable float _y = NaN;
     int _freeTimeZeroSlots;
-    void modifyReach(float t, int change);
-    public:
-    OptimalAgent(int x);
-    static float time;
-    static float rho;
+    void modifyReach(float t, int change) noexcept;
+    const float* _time;
+    float _rho;
+    float _lambdaDelta;
+    std::unordered_map<int, float>* _arrivals;
+public:
+    OptimalAgent(int x, int id, const float* time, float rho, float lambdaDelta, std::unordered_map<int, float>* arrivals);
     static float gamma;
-    static float lambdaDelta;
-    static std::unordered_map<int, float> arrivals;
     float estimate() const noexcept;
     void interact(Agent* that) noexcept;
-    void leave(Agent* agentToInform = nullptr);
 };
 
 #endif

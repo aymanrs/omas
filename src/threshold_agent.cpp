@@ -3,8 +3,7 @@
 #include <stdexcept>
 #endif
 
-ThresholdAgent::ThresholdAgent(int x, int threshold) {
-    _x = x;
+ThresholdAgent::ThresholdAgent(int x, int id, int threshold) : Agent(x, id) {
     _y = x;
     _t = 0;
     _threshold = threshold;

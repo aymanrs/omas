@@ -2,6 +2,7 @@
 #define __AGENT_HPP__
 
 #include <string>
+#include <unordered_map>
 
 enum class AgentType {
     Announce,
@@ -13,13 +14,10 @@ enum class AgentType {
 class Agent {
 protected:
     int _x;
-    Agent() {
-        _id = idCounter++;
-    }
+    Agent(int x, int id) : _x(x), _id(id) {}
 public:
-    int _id;
-    static int idCounter;
-    static Agent* makeAgent(AgentType type, int x, int threshold = 0);
+    const int _id;
+    static Agent* makeAgent(AgentType type, int x, int id, int threshold = 0, const float* time=nullptr, float rho=0, float lamdaDelta=0, std::unordered_map<int, float>* arrivals=nullptr);
     virtual void interact(Agent* that) noexcept = 0;
     virtual void leave(Agent* agentToInform = nullptr) {};
     virtual float estimate() const noexcept = 0;

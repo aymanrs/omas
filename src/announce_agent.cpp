@@ -3,8 +3,7 @@
 #include <stdexcept>
 #endif
 
-AnnounceAgent::AnnounceAgent(int x) {
-    _x = x;
+AnnounceAgent::AnnounceAgent(int x, int id) : Agent(x, id) {
     _y = x;
     _k = 0;
 }
