@@ -3,7 +3,7 @@
 #include <stdexcept>
 #endif
 
-AnnounceAgent::AnnounceAgent(int x, int id) : Agent(x, id) {
+AnnounceAgent::AnnounceAgent(float x, int id) : Agent(x, id) {
     _y = x;
     _k = 0;
 }

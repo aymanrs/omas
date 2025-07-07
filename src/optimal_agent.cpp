@@ -18,7 +18,7 @@ float fastPow(float x, int n){
 }
 
 float OptimalAgent::gamma = 0.003;
-OptimalAgent::OptimalAgent(int x, int id, const float* time, float rho, float lambdaDelta, std::unordered_map<int, float>* const arrivals)
+OptimalAgent::OptimalAgent(float x, int id, const float* time, float rho, float lambdaDelta, std::unordered_map<int, float>* const arrivals)
 : Agent(x, id) {
     _time = time;
     _rho = rho;
@@ -77,6 +77,7 @@ void OptimalAgent::interact(Agent* that) noexcept {
 float OptimalAgent::estimate() const noexcept {
     if(!isnanf(_y)) return _y;
     float localTime = _w.at(_id).second;
+    std::mt19937 rng(_id*20000+int(localTime));
     float lnRhoBar = log(1-_rho);
     float lnGammaBar = log(1-gamma);
     float pStayedGivenUnreached = 1, pUnreachedAndStayed = 1, pUnreachedAndLeft = 0;
@@ -95,7 +96,7 @@ float OptimalAgent::estimate() const noexcept {
     std::sort(events.begin(), events.end(), std::greater<std::pair<float, int>>());
     int availableTimeZeroSlots = _freeTimeZeroSlots;
     while(availableTimeZeroSlots--) {
-        int x = rng()%1000;
+        int x = urd(rng)*1000;
         if(x > _x) events.emplace_back(0, x);
     }
     events.emplace_back(0, -10000);
@@ -138,7 +139,7 @@ float OptimalAgent::estimate() const noexcept {
     while(true){
         t += sampleExpDist(1/_lambdaDelta);
         if(t > localTime) break;
-        int x = rng()%1000;
+        int x = urd(rng)*1000;
         if(x <= _x) continue;
         while(std::get<0>(t_pUAS_pUAL[eventPtr]) < t) eventPtr--;
         std::tie(prevT, pUnreachedAndStayed, pUnreachedAndLeft, nReached) = t_pUAS_pUAL[eventPtr];

@@ -3,14 +3,14 @@
 #include <stdexcept>
 #endif
 
-ThresholdAgent::ThresholdAgent(int x, int id, int threshold) : Agent(x, id) {
+ThresholdAgent::ThresholdAgent(float x, int id, int threshold) : Agent(x, id) {
     _y = x;
     _t = 0;
     _threshold = threshold;
 }
 
 float ThresholdAgent::estimate() const noexcept {
-    return 961.5;
+    return _y;
 }
 
 void ThresholdAgent::update() {

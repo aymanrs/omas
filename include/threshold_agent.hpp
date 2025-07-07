@@ -9,7 +9,7 @@ private:
     int _t, _threshold;
     void update();
 public:
-    ThresholdAgent(int x, int id, int threshold);
+    ThresholdAgent(float x, int id, int threshold);
     float estimate() const noexcept;
     void interact(Agent* that) noexcept;
 };

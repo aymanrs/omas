@@ -5,7 +5,7 @@
 #include <stdexcept>
 #endif
 
-TwoMaxAgent::TwoMaxAgent(int x, int id, int threshold) : Agent(x, id) {
+TwoMaxAgent::TwoMaxAgent(float x, int id, int threshold) : Agent(x, id) {
     _y = x;
     _t = 0;
     _y2 = std::numeric_limits<float>::min();
@@ -15,8 +15,7 @@ TwoMaxAgent::TwoMaxAgent(int x, int id, int threshold) : Agent(x, id) {
 }
 
 float TwoMaxAgent::estimate() const noexcept {
-    float lerpParam = float(_interactions)/(_interactions+6);
-    return _y*lerpParam + 961.5*(1-lerpParam);
+    return _y;
 }
 
 void TwoMaxAgent::update() {

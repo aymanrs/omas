@@ -5,8 +5,8 @@
 #include <random>
 #include "pcg_random.hpp"
 
-extern pcg32_fast rng;
 extern std::uniform_real_distribution<float> urd;
+extern thread_local pcg32_fast rng;
 std::pair<int, int> randomPair(int n);
 int randomDifferentIndex(int n, int i);
 struct Curve {

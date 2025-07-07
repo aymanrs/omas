@@ -1,12 +1,14 @@
 #include <fstream>
+#include <thread>
 #ifdef DEBUG
 #include <stdexcept>
 #endif
 #include "utils.hpp"
 #include "agent.hpp"
 
-pcg32_fast rng(pcg_extras::seed_seq_from<std::random_device>{});
-std::uniform_real_distribution<float> urd(0, 1);
+std::hash<std::thread::id> hasher;
+thread_local pcg32_fast rng(hasher(std::this_thread::get_id()));
+std::uniform_real_distribution<float> urd;
 
 std::pair<int, int> randomPair(int n) {
 #ifdef DEBUG
