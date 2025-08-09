@@ -195,7 +195,7 @@ Curve generateCurve(int n, int threshold, int simTimePerLifetime, const std::vec
 
 
 int main() {
-    const int n = 80, T_star = 10, simTimePerLifetime = 30, nRuns = 10;
+    const int n = 40, T_star = 10, simTimePerLifetime = 30, nRuns = 10;
     std::vector<float> InteractionsPerLifetime;
     const float a = 20, b = 4000, nIPLs = 15;
     for(float IPLIdx = 0; IPLIdx < nIPLs;IPLIdx++) {

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import sys
-import math
+
 def main():
     filename = sys.argv[1]
     with open(filename) as f:

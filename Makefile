@@ -14,8 +14,11 @@ obj/%.o: src/%.cpp $(INCLUDES)
 bin/$(EXEC): $(OBJ)
 	$(CXX) -o $@ $(OBJ) $(LDFLAGS)
 
-%.plot: data/%.plot plot.py
+%.plot: data/%.plot plot.py .venv/bin/python3
 	.venv/bin/python3 plot.py $<
+
+%.plot: data/%.plot plot.py
+	python3 plot.py $<
 
 clean:
 	rm obj/*
