@@ -1,9 +1,7 @@
+#include <algorithm>
 #include "threshold_agent.hpp"
-#ifdef DEBUG
-#include <stdexcept>
-#endif
 
-ThresholdAgent::ThresholdAgent(float x, int id, int threshold) : Agent(x, id) {
+ThresholdAgent::ThresholdAgent(float x, int threshold) : Agent(x) {
     _y = x;
     _t = 0;
     _threshold = threshold;
@@ -14,8 +12,7 @@ float ThresholdAgent::estimate() const noexcept {
 }
 
 void ThresholdAgent::update() {
-    _t++;
-    if(_t >= _threshold) {
+    if(_t > _threshold) {
         _t = 0;
         _y = _x;
     }
@@ -25,22 +22,16 @@ void ThresholdAgent::update() {
     }
 }
 
-void ThresholdAgent::interact(Agent* that) noexcept {
-    ThresholdAgent* other = reinterpret_cast<ThresholdAgent*>(that);
-#ifdef DEBUG
-    if(other == nullptr) {
-        throw std::runtime_error("Invalid agent type during interaction (expected ThresholdAgent)");
-    }
-#endif
-    update();
-    other->update();
+void ThresholdAgent::interact(ThresholdAgent* other) noexcept {
     if(_y > other->_y) {
         other->_y = _y;
-        other->_t = _t;
+        other->_t = ++_t;
     } else if (_y < other->_y) {
         _y = other->_y;
-        _t = other->_t;
+        _t = ++other->_t;
     } else {
-        _t = other->_t = std::min(_t, other->_t);
+        _t = other->_t = std::min(_t, other->_t)+1;
     }
+    update();
+    other->update();
 }

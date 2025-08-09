@@ -1,9 +1,7 @@
 #include "announce_agent.hpp"
-#ifdef DEBUG
-#include <stdexcept>
-#endif
+#include <algorithm>
 
-AnnounceAgent::AnnounceAgent(float x, int id) : Agent(x, id) {
+AnnounceAgent::AnnounceAgent(float x) : Agent(x) {
     _y = x;
     _k = 0;
 }
@@ -12,26 +10,14 @@ float AnnounceAgent::estimate() const noexcept {
     return _y;
 }
 
-void AnnounceAgent::leave(Agent* agentToInform) {
-    AnnounceAgent* other = reinterpret_cast<AnnounceAgent*>(agentToInform);
-#ifdef DEBUG
-    if(other == nullptr) {
-        throw std::runtime_error("Invalid agent type during interaction (expected ThresholdAgent)");
-    }
-#endif
-    if(_k >= other->_k) {
-        other->_y = other->_x;
-        other->_k = _k+1;
+void AnnounceAgent::acknowledgeDeparture(AnnounceAgent* leavingAgent) {
+    if(leavingAgent->_k >= _k) {
+        _y = _x;
+        _k = leavingAgent->_k+1;
     }
 }
 
-void AnnounceAgent::interact(Agent* that) noexcept {
-    AnnounceAgent* other = reinterpret_cast<AnnounceAgent*>(that);
-#ifdef DEBUG
-    if(other == nullptr) {
-        throw std::runtime_error("Invalid agent type during interaction (expected ThresholdAgent)");
-    }
-#endif
+void AnnounceAgent::interact(AnnounceAgent* other) noexcept {
     if(_k > other->_k){
         _y = other->_y = std::max(_y, float(other->_x));
         other->_k = _k;

@@ -3,15 +3,21 @@
 
 #include "agent.hpp"
 
+// Proposed Algorithm.
+// Maintains the 2 biggest encountered values
+// as well as estimates for the avg IPL and avg N.
+// Explicitly computes the probability that each value
+// is still present and estimates the most likely maximum
 class TwoMaxAgent : public Agent {
 private:
     float _y, _y2;
-    int _t, _t2, _threshold, _interactions;
+    int _t, _t2;
+    float _avgInteractionsAs2Max, _avgInteractions;
     void update();
 public:
-    TwoMaxAgent(float x, int id, int threshold);
+    TwoMaxAgent(float x);
     float estimate() const noexcept;
-    void interact(Agent* that) noexcept;
+    void interact(TwoMaxAgent* other) noexcept;
 };
 
 #endif

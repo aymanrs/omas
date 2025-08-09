@@ -1,14 +1,17 @@
 #include <fstream>
 #include <thread>
+#include <iomanip>
+#include <chrono>
 #ifdef DEBUG
 #include <stdexcept>
 #endif
 #include "utils.hpp"
 #include "agent.hpp"
 
-std::hash<std::thread::id> hasher;
-thread_local pcg32_fast rng(hasher(std::this_thread::get_id()));
-std::uniform_real_distribution<float> urd;
+static std::hash<std::thread::id> hasher;
+thread_local pcg32_fast rng(std::chrono::high_resolution_clock::now().time_since_epoch().count()+hasher(std::this_thread::get_id()));
+std::uniform_real_distribution<float> urd(0.f, 1.f);
+
 
 std::pair<int, int> randomPair(int n) {
 #ifdef DEBUG
@@ -27,6 +30,7 @@ std::pair<int, int> randomPair(int n) {
     return std::make_pair(i, j);
 
 }
+
 int randomDifferentIndex(int n, int i) {
 #ifdef DEBUG
     if(n < 2) {
@@ -41,7 +45,6 @@ int randomDifferentIndex(int n, int i) {
     return j;
 }
 
-
 void savePlot(const std::vector<Curve>& curves, const std::string& filename, const std::string& title, const std::string& xlabel, const std::string& ylabel) {
     std::ofstream outputFile(filename);
     outputFile << title << '\n';
@@ -55,9 +58,9 @@ void savePlot(const std::vector<Curve>& curves, const std::string& filename, con
         }
 #endif
         outputFile << curve.label << '\n';
-        for(int i = 0;i < curve.x.size();i++) outputFile << (i?" " : "") << curve.x[i];
+        for(size_t i = 0;i < curve.x.size();i++) outputFile << (i?" ":"") << std::fixed << std::setprecision(10) << curve.x[i];
         outputFile << '\n';
-        for(int i = 0;i < curve.y.size();i++) outputFile << (i?" " : "") << curve.y[i];
+        for(size_t i = 0;i < curve.y.size();i++) outputFile << (i?" ":"") << std::fixed << std::setprecision(10) << curve.y[i];
         outputFile << '\n';
     }
 }

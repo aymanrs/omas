@@ -1,6 +1,6 @@
 CXX = g++
 EXEC = plotgen.out
-CXXFLAGS = -O2 -Iinclude
+CXXFLAGS = -O2 -Iinclude --std=c++23 -Wall
 LDFLAGS = -O2
 SRC = $(wildcard src/*.cpp)
 OBJ = $(patsubst src/%.cpp,obj/%.o,$(SRC))
